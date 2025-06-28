@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nhật Tân</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Serif', sans-serif;
+      background: #fff8f0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #c0392b;
+    }
+    #poem {
+      font-size: 18px;
+      max-width: 600px;
+      line-height: 1.8;
+      white-space: pre-line;
+      min-height: 200px;
+    }
+    .line {
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="poem"></div>
+  <script>
+    function getPoemByTime() {
+      const h = new Date().getHours();
+      const poems = [
+        // 0h: Đêm Khuya Tương Tư
+        [
+          "Trăng mờ treo lơ lửng giữa trời,",
+          "Tương tư một nét, mộng chơi vơi,",
+          "Gió lay rèm thắm, hồn thao thức,",
+          "Ánh bạc màn sương, dạ bồi hồi,",
+          "Lời hẹn năm xưa còn vương vấn,",
+          "Nụ cười ngày ấy mãi sáng ngời,",
+          "Dẫu cho cách trở ngàn sông núi,",
+          "Tình ấy trong tim chẳng nhạt phôi."
+        ],
+        // 1h: Lời Thì Thầm Đêm
+        [
+          "Sương mờ giăng lối, lạnh mành thưa,",
+          "Lòng nhớ người thương, giấc mộng tơ,",
+          "Trăng ánh soi mờ, cơn tâm sự,",
+          "Lệ mờ lấp lánh, giọt tình mơ,",
+          "Hương xưa vương vấn bên thềm cũ,",
+          "Lời hẹn còn thơm, gió đưa đi,",
+          "Dẫu biết yêu là cơn mộng ảo,",
+          "Vẫn mong gặp lại bóng người xưa."
+        ],
+        // 2h: Mộng Dưới Ánh Sao
+        [
+          "Sao mờ lấp lánh giữa ngân hà,",
+          "Tâm gửi tương tư, giấc mộng tà,",
+          "Gió lạnh đêm sâu, hồn lạc lối,",
+          "Trăng tàn ánh bạc, dạ xót xa,",
+          "Ngày xưa kề vai chung một lối,",
+          "Giờ đây cách trở tựa ngân hà,",
+          "Tình yêu như gió qua thềm vắng,",
+          "Vẫn mãi chờ mong bóng người tà."
+        ],
+        // 3h: Tâm Sự Dưới Trăng
+        [
+          "Tĩnh lặng ba giờ, ánh trăng soi,",
+          "Lòng nhớ người thương, dạ bồi hồi,",
+          "Sương phủ hiên thềm như lệ trắng,",
+          "Gió lay cành liễu, tựa lời mời,",
+          "Hương hoa năm ấy còn vương vấn,",
+          "Nụ hôn ngày ấy mãi sáng ngời,",
+          "Dẫu đời bão tố luôn giăng lối,",
+          "Tình ấy trong tim chẳng nhạt phôi."
+        ],
+        // 4h: Bình Minh Tái Hợp
+        [
+          "Bình minh khẽ gọi, ánh hồng phai,",
+          "Mộng thấy người thương, dạ miệt mài,",
+          "Sương sớm long lanh như mắt biếc,",
+          "Gió lay hoa cỏ, tựa lời ai,",
+          "Tình xưa nối lại qua mây trắng,",
+          "Lời hẹn năm nào vẫn sáng ngời,",
+          "Dẫu cách muôn trùng xa diệu vợi,",
+          "Tâm hồn mãi mãi một hình hài."
+        ],
+        // 5h: Sớm Mai Tình Thắm
+        [
+          "Nắng sớm chan hòa, rọi mái hiên,",
+          "Tình yêu đắm thắm, tựa hoa viên,",
+          "Mây trôi lững thững như lời nhắn,",
+          "Gió thoảng mơn man, giấc mộng thiêng,",
+          "Mắt biếc năm xưa còn vương vấn,",
+          "Nụ cười ngày ấy mãi bình yên,",
+          "Dẫu đời đổi thay qua năm tháng,",
+          "Lòng này mãi giữ một lời nguyền."
+        ],
+        // 6h: Hương Sáng Tình Nồng
+        [
+          "Sáng mờ sương phủ, lối hoa thơm,",
+          "Tình tựa suối trong, giấc mộng ngầm,",
+          "Nắng nhẹ lung linh như mắt biếc,",
+          "Gió lay cành biếc, gọi tên em,",
+          "Lời yêu năm ấy còn vang vọng,",
+          "Hẹn ước ngày xưa mãi êm đềm,",
+          "Dẫu thế gian đổi thay muôn thuở,",
+          "Tâm hồn mãi một mộng thầm ngâm."
+        ],
+        // 7h: Ánh Nắng Tình Đầu
+        [
+          "Bảy giờ nắng thắm, trải đường quen,",
+          "Tình đầu như gió, thoảng êm đềm,",
+          "Hoa nở bên thềm như má hồng,",
+          "Mây trôi lặng lẽ, tựa lời em,",
+          "Ngày xưa chung lối vang câu hát,",
+          "Giờ đây lưu dấu giấc mộng mềm,",
+          "Dẫu đời bão tố luôn vần vũ,",
+          "Tình ấy trong tim mãi sáng ngời."
+        ],
+        // 8h: Sáng Rực Tình Yêu
+        [
+          "Tám giờ phố sáng, ánh bình minh,",
+          "Tình yêu như suối, mát trong lành,",
+          "Nắng vàng tô điểm hoa bên ngõ,",
+          "Gió thoảng mơn man, giấc mộng tình,",
+          "Mắt ai lấp lánh như sao sớm,",
+          "Nụ cười như gió, thoáng qua nhanh,",
+          "Dẫu đời vội vã luôn trôi mãi,",
+          "Lòng này mãi giữ một chân thành."
+        ],
+        // 9h: Tình Trong Nắng Sớm
+        [
+          "Chín giờ nắng ấm, trải hiên nhà,",
+          "Tình yêu như gió, thoảng la đà,",
+          "Hoa cười khe khẽ bên thềm vắng,",
+          "Mây trắng lững lờ, tựa bóng tà,",
+          "Lời yêu năm ấy còn thơm ngát,",
+          "Hẹn ước ngày xưa mãi mặn mà,",
+          "Dẫu đời đổi thay qua năm tháng,",
+          "Tâm hồn mãi giữ một người xa."
+        ],
+        // 10h: Mộng Tình Ban Mai
+        [
+          "Mười giờ nắng thắm, lối vàng tươi,",
+          "Tình tựa hoa thơm, dưới nắng ngời,",
+          "Gió nhẹ mơn man như lời nhắn,",
+          "Mây trôi lững thững, giấc mộng bời,",
+          "Mắt ai lấp lánh ngày chung bước,",
+          "Nụ cười như gió, thoáng qua ngõ,",
+          "Dẫu đời bận rộn luôn quay cuồng,",
+          "Lòng này mãi một mộng người ơi."
+        ],
+        // 11h: Trưa Hè Tình Thắm
+        [
+          "Trưa vàng nắng rực, lối nghiêng nghiêng,",
+          "Tình yêu như lửa, cháy miệt mài,",
+          "Hoa phượng đỏ thắm bên thềm gọi,",
+          "Gió hè mơn man, giấc mộng ai,",
+          "Lời thề năm ấy còn vang vọng,",
+          "Nụ hôn ngày ấy mãi không phai,",
+          "Dẫu đời đổi gió luôn trôi mãi,",
+          "Lòng này mãi giữ một hình hài."
+        ],
+        // 12h: Giữa Trưa Tình Nồng
+        [
+          "Mười hai giờ, nắng đứng đầu hiên,",
+          "Tình yêu như suối, mát bình yên,",
+          "Hoa cười rực rỡ bên thềm vắng,",
+          "Gió thoảng mơn man, giấc mộng thiêng,",
+          "Mắt ai lấp lánh như nắng hạ,",
+          "Nụ cười như gió, thoáng êm đềm,",
+          "Dẫu đời vội vã luôn trôi mãi,",
+          "Lòng này mãi giữ một lời nguyền."
+        ],
+        // 13h: Chiều Tình Lãng Mạn
+        [
+          "Nắng chiều nghiêng lối, nhẹ gót bay,",
+          "Tình tựa heo may, giấc mộng đầy,",
+          "Khóm cúc vàng tươi bên thềm vắng,",
+          "Gió lay cành liễu, tựa lời say,",
+          "Mắt ai năm ấy còn vương vấn,",
+          "Nụ cười ngày ấy mãi ngất ngây,",
+          "Dẫu đời bão tố luôn giăng lối,",
+          "Tình này mãi một chốn mê say."
+        ],
+        // 14h: Mộng Chiều Tình Cũ
+        [
+          "Hai giờ chiều, nắng nhẹ nghiêng nghiêng,",
+          "Tình xưa như gió, thoảng mộng riêng,",
+          "Lá vàng rơi nhẹ bên thềm vắng,",
+          "Mây trắng lững lờ, giấc mộng thiêng,",
+          "Lời yêu năm ấy còn vang vọng,",
+          "Hẹn ước ngày xưa mãi êm đềm,",
+          "Dẫu đời đổi thay qua năm tháng,",
+          "Lòng này mãi giữ một bóng hình."
+        ],
+        // 15h: Chiều Tà Tình Thắm
+        [
+          "Ba giờ gió mát, thoảng lùa qua,",
+          "Tình yêu như nắng, nhẹ mộng tà,",
+          "Hoa cười khe khẽ bên thềm vắng,",
+          "Mây trôi lững thững, tựa bóng tà,",
+          "Mắt ai lấp lánh như hoàng hôn,",
+          "Nụ cười như gió, thoáng mặn mà,",
+          "Dẫu đời vội vã luôn trôi mãi,",
+          "Lòng này mãi giữ một người xa."
+        ],
+        // 16h: Hoàng Hôn Tình Mộng
+        [
+          "Bốn giờ nắng nhạt, dần tà trôi,",
+          "Tình tựa mây hồng, giấc mộng bời,",
+          "Lá rơi khe khẽ bên thềm vắng,",
+          "Gió thoảng mơn man, tựa giấc ngời,",
+          "Lời yêu năm ấy còn thơm ngát,",
+          "Nụ cười ngày xưa mãi sáng ngời,",
+          "Dẫu đời đổi gió luôn vần vũ,",
+          "Tâm hồn mãi một mộng người ơi."
+        ],
+        // 17h: Chiều Tàn Tình Lỡ
+        [
+          "Năm giờ hoàng hôn, tím ngậm ngùi,",
+          "Tình yêu như gió, lạc chơi vơi,",
+          "Mây trôi qua lối, hồn thầm lặng,",
+          "Lá rụng bên thềm, dạ giấc bùi,",
+          "Mắt ai năm ấy còn vương vấn,",
+          "Nụ cười ngày ấy mãi ngậm ngùi,",
+          "Dẫu mộng tan theo dòng thời gian,",
+          "Lòng vẫn tương tư một bóng người."
+        ],
+        // 18h: Hoàng Hôn Tím Rực
+        [
+          "Hoàng hôn tím thắm, rụng chân trời,",
+          "Tình tựa mây trôi, giấc mộng bời,",
+          "Gió vỗ mái lòng, như lời nhắn,",
+          "Mây trôi dòng nhớ, tựa lệ rơi,",
+          "Mắt ai năm ấy còn bâng khuâng,",
+          "Nụ cười ngày ấy mãi sáng ngời,",
+          "Dẫu đời cách trở muôn trùng ngói,",
+          "Tình này mãi giữ một phương trời."
+        ],
+        // 19h: Tối Trăng Tình Thắm
+        [
+          "Bảy giờ trăng ánh, sáng ngần ngàn,",
+          "Tình yêu như gió, thoảng mộng làn,",
+          "Sao mờ lấp lánh, soi tâm sự,",
+          "Gió nhẹ mơn man, giấc mộng mang,",
+          "Lời yêu năm ấy còn vương vấn,",
+          "Nụ cười ngày xưa mãi dịu dàng,",
+          "Dẫu đời bão tố luôn giăng lối,",
+          "Tâm hồn mãi giữ một ánh vàng."
+        ],
+        // 20h: Đêm Tình Lung Linh
+        [
+          "Tám giờ ánh trăng, soi sáng ngời,",
+          "Tình yêu như suối, mát mộng bời,",
+          "Sao rơi lấp lánh, bên thềm vắng,",
+          "Gió thoảng mơn man, giấc mộng ngời,",
+          "Mắt ai năm ánh, như sao lấp,",
+          "Nụ cười ngày xưa, mãi sáng ngời,",
+          "Dẫu đời vội vã luôn trôi mãi,",
+          "Lòng này mãi giữ một người ơi."
+        ],
+        // 21h: Đêm Sâu Tương Tư
+        [
+          "Chín giờ đêm trăng, ánh sáng tà,",
+          "Tương tư như gió, thoảng ngân hà,",
+          "Sương mờ giăng lối, hồn thầm lặng,",
+          "Gió lạnh mơn man, giấc mộng tà,",
+          "Lời yêu năm ấy còn thơm ngát,",
+          "Nụ cười ngày xưa mãi mặn mà,",
+          "Dẫu đời đổi thay qua năm tháng,",
+          "Tâm hồn mãi giữ một người xa."
+        ],
+        // 22h: Khuya Tình Tĩnh Lặng
+        [
+          "Mười giờ sương gió, thoảng lùa trôi,",
+          "Tình tựa trăng mờ, giấc mộng bời,",
+          "Sao ánh lung linh, soi tâm sự,",
+          "Gió lay rèm thắm, tựa lời mời,",
+          "Mắt ai năm ấy còn lấp lánh,",
+          "Nụ cười ngày xưa mãi sáng ngời,",
+          "Dẫu mộng tan theo dòng thời gian,",
+          "Lòng vẫn tương tư một bóng người."
+        ],
+        // 23h: Khuya Trăng Tình Cuối
+        [
+          "Mười một giờ, trăng sáng lung linh,",
+          "Tình yêu như ánh, nước trong lành,",
+          "Sương mờ giăng lối, hồn thầm lặng,",
+          "Gió thoảng mơn man, giấc mộng tình,",
+          "Mắt ai năm ấy còn vương ánh,",
+          "Nụ cười ngày xưa mãi sáng bình,",
+          "Dẫu đời bão tố luôn giăng lối,",
+          "Tâm hồn mãi giữ một chân tình."
+        ]
+      ];
+      return poems[h];
+    }
+
+    const poemLines = getPoemByTime();
+    const container = document.getElementById("poem");
+
+    function typeLine(line, index, callback) {
+      const span = document.createElement("div");
+      span.className = "line";
+      container.appendChild(span);
+      let i = 0;
+      const typing = setInterval(() => {
+        span.textContent += line.charAt(i);
+        i++;
+        span.style.opacity = 1;
+        if (i >= line.length) {
+          clearInterval(typing);
+          setTimeout(callback, 300); // đợi trước khi dòng tiếp theo hiện
+        }
+      }, 50);
+    }
+
+    function typePoem(index = 0) {
+      if (index < poemLines.length) {
+        typeLine(poemLines[index], index, () => typePoem(index + 1));
+      }
+    }
+
+    typePoem();
+  </script>
+</body>
+</html>

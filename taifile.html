@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Tải File lên Drive</title>
+  <link rel="stylesheet" href="styles-taifile.css">
+  <script src="script-taifile.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>📁Tải File</h1>
+
+    <input type="file" id="fileInput" multiple>
+    <button onclick="uploadFiles()">🚀 Tải lên</button>
+
+    <div id="loading" class="loading" style="display: none;">
+      <div class="spinner"></div>
+      <p>Đang tải lên... Xin chờ một chút nha 😎</p>
+    </div>
+
+    <ul id="resultList"></ul>
+  </div>
+</body>
+</html>
