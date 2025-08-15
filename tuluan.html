@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tự luận</title>
+  <link rel="stylesheet" href="tuluan.css">
+</head>
+<body>
+  <div class="main-wrapper">
+    <div class="container">
+      <h1>📝 Kiểm tra tự luận</h1>
+      <div id="dropzone" class="dropzone">
+        <p>Kéo và thả tệp Word (.docx) vào đây hoặc</p>
+        <label for="wordFile" class="custom-file-upload">Chọn tệp</label>
+        <input type="file" id="wordFile" accept=".doc,.docx" class="hidden">
+        <p id="fileNameDisplay" class="file-name-display"></p>
+      </div>
+
+      <div id="config">
+        <label>Nhập điểm</label>
+        <input type="number" id="pointPerQuestion" min="1" max="10">
+
+        <div class="time-config-container">
+          <label>Chế độ thời gian:</label>
+          <div>
+            <input type="radio" id="unlimitedTime" name="timeMode" value="unlimited" checked>
+            <label for="unlimitedTime">Không giới hạn</label>
+          </div>
+          <div>
+            <input type="radio" id="limitedTime" name="timeMode" value="limited">
+            <label for="limitedTime">Giới hạn thời gian </label>
+            <input type="number" id="examTime" min="1" placeholder="Phút" disabled>
+          </div>
+        </div>
+        
+        <button onclick="startExam()">Bắt đầu</button>
+        <button onclick="window.location.href='dinhdangtuluan.html'">Định dạng tự luận</button>
+        <button onclick="window.location.href='kiemtra.html'">Trang chủ</button>
+      </div>
+
+      <div id="examContainer" class="hidden">
+        <div id="progressBarContainer">
+            <div id="progressBarFill"></div>
+        </div>
+        <div id="countdown" class="countdown"></div>
+        <div id="questionCounter" class="question-counter"></div>
+        
+        <div class="questions-wrapper">
+          <div id="questionsContainer">
+            </div>
+        </div>
+        
+        <div class="bottom-actions">
+          <button id="prevButton" onclick="prevQuestion()" disabled>Lùi</button>
+          <button id="nextButton" onclick="nextQuestion()">Tiếp</button>
+          <button id="submitExamButton" onclick="submitExam()">Nộp bài</button>
+        </div>
+      </div>
+
+      <div id="resultContainer" class="hidden">
+        <h2>Kết quả</h2>
+        <div id="resultSummary" class="result-summary-card">
+          <div class="result-item">
+            <p>Tổng số câu hỏi</p>
+            <span id="totalQuestions"></span>
+          </div>
+          <div class="result-item">
+            <p>Số câu đã làm</p>
+            <span id="answeredQuestions"></span>
+          </div>
+          <div class="result-item correct">
+            <p>Số câu đúng</p>
+            <span id="correctQuestions"></span>
+          </div>
+          <div class="result-item incorrect">
+            <p>Số câu sai</p>
+            <span id="wrongQuestions"></span>
+          </div>
+          <div class="result-item">
+            <p>Điểm</p>
+            <span id="finalScore"></span>
+          </div>
+          <div class="result-item time">
+            <p>Thời gian làm bài</p>
+            <span id="finalTime"></span>
+          </div>
+          <div class="result-item violation">
+            <p>Số lần vi phạm</p>
+            <span id="violationCount"></span>
+          </div>
+        </div>
+        
+        <p id="summaryMessage"></p>
+        
+        <div id="buttons">
+          <button onclick="filterAnswers(true)">Câu đúng</button>
+          <button onclick="filterAnswers(false)">Câu sai</button>
+          <button onclick="retryLastExam()">Làm lại bài</button>
+          <button onclick="goHome()">Trang chủ</button>
+        </div>
+        <div id="answerReview"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="unansweredWarningModal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeWarning('unanswered')">×</span>
+      <h3>Bạn chưa hoàn thành các câu sau:</h3>
+      <ul id="unansweredList"></ul>
+      <p>Bạn có muốn nộp bài không?</p>
+      <div class="modal-actions">
+        <button onclick="confirmSubmit()">Nộp bài</button>
+        <button onclick="closeWarning('unanswered')">Quay lại</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="tuluan.js"></script>
+</body>
+</html>

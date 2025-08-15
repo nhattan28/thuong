@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thương</title>
+    <link rel="icon" href="logo.png"/>
+    <style>
+      html, body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden; /* ✅ Cấm cuộn toàn trang */
+      }
+      .layout {
+        display: flex;
+        height: calc(100vh - 60px);
+        position: relative;
+      }
+
+      .sidebar {
+        width: auto;
+        background-color: #f6eadc;
+        color: black;
+        padding-top: 10px;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease;
+        transform: translateX(-100%);
+        z-index: 1001;
+        position: fixed;
+        height: 100%;
+        top: 0;
+        left: 0;
+        overflow-y: auto;
+        scrollbar-width: none;
+      }
+
+      .sidebar::-webkit-scrollbar {
+        display: none;
+      }
+
+      .sidebar.show {
+        transform: translateX(0);
+      }
+
+      .sidebar button {
+        padding: 12px 12px;
+        background: none;
+        border: none;
+        text-align: left;
+        color: black;
+        font-size: 15px;
+        cursor: pointer;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .sidebar button:hover {
+        background-color: #aff8e2;
+        color: red;
+      }
+
+      .sidebar button.active {
+        background-color: #e6f9f4;
+        color: red;
+        font-weight: bold;
+        border-radius: 6px;
+      }
+
+      .sidebar details {
+        padding: 8px 10px;
+        margin-bottom: 12px;
+        border-radius: 6px;
+        transition: background 0.3s;
+      }
+
+      .sidebar details.active-parent > summary {
+        color: red;
+        font-weight: bold;
+        background-color: #fff0f0;
+        border-radius: 6px;
+        padding: 8px 10px;
+      }
+
+      .sidebar details {
+      display: block;
+      }
+
+      .sidebar details > button {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+        }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 1000;
+        display: none;
+      }
+
+      .overlay.show {
+        display: block;
+      }
+
+      .content {
+        flex-grow: 1;
+        width: 100%;
+        margin-left: 0;
+        height: 100%;
+      }
+
+      .clock-container {
+        text-align: center;
+        margin: 8px 0;
+        font-family: 'Courier New', monospace;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .clock {
+        font-size: 15px;
+        color: black;
+        
+        margin-right: 10px;
+      }
+
+      .date {
+        font-size: 15px;
+        color: black;
+      }
+
+      .toggle-btn {
+        background: none;
+        border: none;
+        color: red;
+        font-size: 20px;
+        padding: 5px 20px;
+        cursor: pointer;
+        z-index: 1002;
+        position: fixed;
+        top: 0px;
+        left: 0px;
+      }
+
+      .toggle-btn.hide {
+        display: none;
+        font-size: 2px;;
+      }
+
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="clock-container">
+      <div class="clock" id="clock">--:--:--</div>
+      <div class="date" id="date">Đang tải ngày...</div>
+    </div>
+
+    <button class="toggle-btn" id="toggleBtn" onclick="showSidebar()">☰</button>
+    <div class="overlay" id="overlay" onclick="hideSidebar()"></div>
+
+    <div class="layout">
+      <div class="sidebar" id="sidebar">
+        <button onclick="loadPage(event, 'website2.html')">🏠Trang chủ</button>
+
+        <details>
+          <summary>📚 Học tập</summary>
+          <button onclick="loadPage(event, 'tailieu.html')">Tài liệu</button>
+          <button onclick="loadPage(event, 'taifile.html')">Tải file</button>
+          <button onclick="loadPage(event, 'sosanh.html')">So sánh</button>
+          <button onclick="loadPage(event, 'kiemtra.html')">Kiểm tra</button>
+        </details>
+
+        <details>
+          <summary>🌐 Website</summary>
+          <button onclick="loadPage(event, 'kiemtrawebsite.html')">Test Website</button>
+          <button onclick="window.location.href='https://by.com.vn/'">Rút gọn</button>
+          <button onclick="loadPage(event, 'MaQR.html')">Tạo QR</button>
+        </details>
+
+        <details>
+          <summary>🔍 Xác thực</summary>
+          <button onclick="loadPage(event, 'hanggia.html')">Hàng giả</button>
+          <button onclick="loadPage(event, 'hoadon.html')">Hóa đơn</button>
+          <button onclick="loadPage(event, 'tinhthanh.html')">Tỉnh thành</button>
+          <button onclick="window.location.href='https://chongluadao.vn/'">Chống lừa đảo</button>
+        </details>
+
+        <details>
+          <summary>🧰 Khác</summary>
+          <button onclick="loadPage(event, 'tienich.html')">Tiện ích</button>
+          <button onclick="loadPage(event, 'cameradanang.html')">Camera Đà Nẵng</button>
+          <button onclick="window.location.href='https://savetik.social/vn/'">Tải Tiktok</button>
+          <button onclick="loadPage(event, 'demnguoc.html')">Đếm ngược</button>
+          <button onclick="loadPage(event, 'tinhtuoi.html')">Tính tuổi</button>
+        </details>
+
+        <details>
+          <summary>📊 Giá cả</summary>
+          <button onclick="loadPage(event, 'https://giacaphe.com/gia-ca-phe-dak-nong/')">Giá cà phê</button>
+          <button onclick="loadPage(event, 'https://giacaphe.com/gia-tieu-hom-nay/')">Giá tiêu</button>
+        </details>
+
+        <details>
+          <summary>🎵 Giải trí</summary>
+          <button onclick="loadPage(event, 'timbaihat.html')">Tìm bài hát</button>
+          <button onclick="loadPage(event, 'bao.html')">Đọc báo</button>
+          <button onclick="loadPage(event, 'youtube.html')">Youtube</button>
+        </details>
+
+      </div>
+
+      <div class="content">
+        <iframe id="iframeView" src="website2.html"></iframe>
+      </div>
+    </div>
+
+    <script src="index.js"></script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
