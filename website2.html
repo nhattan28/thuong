@@ -7,16 +7,7 @@
   <script>
     // Ngăn người dùng mở công cụ nhà phát triển
     document.addEventListener('keydown', function(e) {
-      // Chặn F12
-      if (e.key === 'F12' || e.keyCode === 123) {
-        e.preventDefault();
-      }
-      // Chặn Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
-      if (e.ctrlKey && e.shiftKey && (e.key === 'i' || e.key === 'j' || e.key === 'c' || e.key === 'u')) {
-        e.preventDefault();
-      }
-      // Chặn Ctrl+S
-      if (e.ctrlKey && e.key === 's') {
+      if (e.key === 'F12' || e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.key === 'i' || e.key === 'j' || e.key === 'c' || e.key === 'u')) || (e.ctrlKey && e.key === 's')) {
         e.preventDefault();
       }
     });
@@ -46,12 +37,6 @@
       overflow: hidden;
       font-size: 16px;
     }
-    
-    canvas {
-      display: none; /* Hide the old canvas */
-      width: 100%;
-      height: 100%;
-    }
 
     #initial-modal {
         position: fixed;
@@ -74,14 +59,14 @@
         border-radius: 10px;
         text-align: center;
         box-shadow: 0 0 25px rgba(0, 255, 0, 0.7);
-        border: none; /* Xóa viền của modal */
+        border: none;
         animation: glow 1.5s infinite alternate;
         position: relative;
     }
 
     .modal-content h3 {
         margin-top: 0;
-        font-size: 2em;
+        font-size: 4em;
         text-shadow: 0 0 10px #0f0;
     }
     
@@ -115,100 +100,85 @@
       to { box-shadow: 0 0 35px rgba(0, 255, 0, 0.9); }
     }
 
-    #countdown-overlay {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 8em;
-      font-weight: bold;
-      color: #ff0000;
-      text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000;
-      z-index: 100;
-      text-align: center;
-      line-height: 1.5;
-      animation: pulse 1s infinite alternate;
+    #haunting-image {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      transition: opacity 5s ease-in-out;
+      z-index: 200;
+      display: none;
+    }
+
+    /* CSS cho mũi tên được cố định ở vị trí dưới nút menu */
+    #instruction-arrow {
+      position: fixed;
+      top: 1px;
+      left: 1px;
+      width: 50px;
+      height: auto;
+      transform: rotate(deg);
+      animation: pulse 1s infinite;
+      z-index: 400;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
     }
     
-    #jumpscare-text {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 5em;
-        font-weight: bold;
-        color: white;
-        text-shadow: 0 0 20px #fff;
-        z-index: 200;
-        text-align: center;
-        display: none;
-        font-family: 'VT323', monospace;
-    }
-
-    #camera-feed {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: none;
-        z-index: 250;
-    }
-
-    #captured-image {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        display: none;
-        z-index: 260;
-    }
-
     @keyframes pulse {
-      from {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0.8;
-      }
-      to {
-        transform: translate(-50%, -50%) scale(1.1);
-        opacity: 1;
-      }
-    }
+        0% { transform: scale(1) rotate(180deg); }
+        50% { transform: scale(1.1) rotate(180deg); }
+        100% { transform: scale(1) rotate(180deg); }
+    }                           
   </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 </head>
 <body>
-  <canvas id="canvas"></canvas>
+  <div id="red-menu-button">
+    <div id="red-menu-button-center"></div>
+  </div>
+  <img id="instruction-arrow" src="muiten.png" alt="Mũi tên">
+
   <div id="initial-modal">
     <div class="modal-content">
       <h3 id="modal-greeting"></h3>
+      <p id="modal-instruction"></p>
       <button id="modal-ok">Bắt đầu</button>
     </div>
   </div>
-  <div id="countdown-overlay" style="display:none;"></div>
-  <div id="jumpscare-text"></div>
-  <video id="camera-feed" autoplay></video>
-  <img id="captured-image" />
-
+  <img id="haunting-image" src="anhnenma.png" alt="Ảnh ma">
+  <audio id="jumpscare-audio" src="nhackinhdi.mp3" preload="auto"></audio>
   <script>
-    const countdownOverlay = document.getElementById('countdown-overlay');
-    const jumpscareText = document.getElementById('jumpscare-text');
     const initialModal = document.getElementById('initial-modal');
     const modalGreeting = document.getElementById('modal-greeting');
+    const modalInstruction = document.getElementById('modal-instruction');
     const modalOk = document.getElementById('modal-ok');
-    const cameraFeed = document.getElementById('camera-feed');
-    const capturedImage = document.getElementById('captured-image');
+    const hauntingImage = document.getElementById('haunting-image');
+    const jumpscareAudio = document.getElementById('jumpscare-audio');
+    const instructionArrow = document.getElementById('instruction-arrow');
+    const redMenuButton = document.getElementById('red-menu-button');
 
-    let isCountingDown = false;
-    let isTrolling = false;
-    let stream = null;
+    // Hàm tạo hiệu ứng gõ chữ
+    function typeEffect(element, text, speed) {
+        return new Promise(resolve => {
+            let i = 0;
+            element.textContent = '';
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    resolve();
+                }
+            }
+            type();
+        });
+    }
 
     // Cập nhật lời chào theo giờ địa phương
     function updateGreeting() {
@@ -224,157 +194,49 @@
         } else {
             greeting = "Chúc ngủ ngon!";
         }
-        modalGreeting.textContent = greeting;
+        return greeting;
     }
     
-    // Yêu cầu cấp quyền camera khi người dùng tương tác với modal
-    function requestCameraPermission() {
-        // Ẩn modal sau khi người dùng click
+    // Xử lý khi nút Bắt đầu được nhấn
+    function startSequence() {
         initialModal.style.display = 'none';
-
-        // Tự động yêu cầu cấp quyền camera
-        navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-            .then(s => {
-                stream = s;
-            })
-            .catch(err => {
-                console.error("  ", err);
-            });
-            
-        // Bắt đầu đếm ngược sau khi tắt modal
-        startCountdown();
+        // Xóa dòng ẩn mũi tên và nút menu tại đây
+        showImage();
     }
     
-    // Gắn sự kiện cho nút OK
-    modalOk.addEventListener('click', requestCameraPermission);
-    
-    // Bắt đầu đếm ngược
-    function startCountdown() {
-      isCountingDown = true;
-      let count = 8; // Thời gian đếm ngược là 8 giây
-      countdownOverlay.innerHTML = count;
-      countdownOverlay.style.display = 'block';
-
-      const countdownInterval = setInterval(() => {
-        count--;
-        if (count >= 0) {
-          countdownOverlay.innerHTML = count;
-        }
-        if (count === 0) {
-          clearInterval(countdownInterval);
-          startTrollingSequence();
-        }
-      }, 1000);
-    }
-    
-    // Hàm tạo hiệu ứng gõ phím
-    function typeMessage(message, element, speed, callback) {
-        element.innerHTML = '';
-        let i = 0;
-        const typingInterval = setInterval(() => {
-            if (i < message.length) {
-                element.innerHTML += message.charAt(i);
-                i++;
-            } else {
-                clearInterval(typingInterval);
-                if (callback) {
-                    setTimeout(callback, 3000); // Đợi 3 giây trước khi chuyển câu
-                }
-            }
-        }, speed);
-    }
-
-    // Bắt đầu chuỗi tin nhắn trêu chọc
-    function startTrollingSequence() {
-      isTrolling = true;
-      countdownOverlay.style.animation = 'none';
-      countdownOverlay.style.color = '#0f0';
-      countdownOverlay.style.textShadow = '0 0 10px #0f0';
-      countdownOverlay.style.fontSize = '2.5em'; // Giảm kích thước chữ khi hiển thị tin nhắn
-      
-      const messages = [
-        "Sao ngồi im thế? Hoảng rồi à?",
-        "Ta đã lấy được quyền kiểm soát máy tính của ngươi.",
-        "Mọi hành động của ngươi đều được ghi lại.",
-        "Ngươi tưởng ngươi là hacker sao? Ngươi chẳng là gì cả.",
-        "Mọi thông tin cá nhân của ngươi đang nằm trong tay ta.",
-        "Không có đường lui đâu. Hãy chấp nhận số phận của ngươi!",
-        "Chỉ là trò đùa thôi... hay không nhỉ? Hehe...",
-        "Chuẩn bị tinh thần cho điều tồi tệ nhất nào!",
-        "Ta đã lây nhiễm virus vào hệ thống của ngươi."
-      ];
-      let messageIndex = 0;
-      const displayNextMessage = () => {
-        if (messageIndex < messages.length) {
-          typeMessage(messages[messageIndex], countdownOverlay, 100, displayNextMessage);
-          messageIndex++;
-        } else {
-          // Kết thúc chuỗi tin nhắn, kích hoạt jumpscare và camera
-          triggerJumpscareWithCamera();
-        }
-      };
-
-      displayNextMessage();
-    }
-    
-    // Kích hoạt hiệu ứng dọa ma và camera
-    function triggerJumpscareWithCamera() {
-      countdownOverlay.style.display = 'none';
-      
-      // Mở camera giả sau 5s
-      setTimeout(() => {
-        if (stream) {
-            cameraFeed.srcObject = stream;
-            cameraFeed.style.display = 'block';
-            cameraFeed.play();
-        }
-        
-        // Giả hiệu ứng chụp ảnh sau 3s mở camera
+    // Hiển thị ảnh và phát nhạc
+    function showImage() {
+        hauntingImage.style.display = 'block';
         setTimeout(() => {
-          // Tạo một canvas để chụp ảnh
-          const canvas = document.createElement('canvas');
-          canvas.width = cameraFeed.videoWidth;
-          canvas.height = cameraFeed.videoHeight;
-          const context = canvas.getContext('2d');
-          context.drawImage(cameraFeed, 0, 0, canvas.width, canvas.height);
-          
-          // Chuyển ảnh từ canvas thành base64
-          const imageDataUrl = canvas.toDataURL('image/png');
-          
-          // Hiển thị ảnh vừa chụp và ẩn video
-          capturedImage.src = imageDataUrl;
-          capturedImage.style.display = 'block';
-          cameraFeed.style.display = 'none';
-          
-          // Hiệu ứng nháy sáng
-          document.body.style.backgroundColor = '#fff';
-          setTimeout(() => {
-              document.body.style.backgroundColor = '#000';
-          }, 100);
-          
-          // Sau 28s hiển thị ảnh, chuyển về màn hình GAME OVER
-          setTimeout(() => {
-              capturedImage.style.display = 'none';
-              document.body.style.backgroundColor = '#f00'; // Màu nền đỏ chói
-              jumpscareText.style.display = 'block';
-              typeMessage("GAME OVER!", jumpscareText, 100, null);
-              
-              // Đóng tab sau 2 giây
-              setTimeout(() => {
-                window.close();
-              }, 2000);
-          }, 28000);
-        }, 3000); // Thời gian giả chụp ảnh
-        
-      }, 5000); // Thời gian chờ trước khi mở camera
+            hauntingImage.style.opacity = '1';
+        }, 100);
+
+        jumpscareAudio.play();
     }
 
-    // Khởi động timer khi tải trang
-    window.addEventListener('load', () => {
-      // Cập nhật lời chào ngay khi tải trang
-      updateGreeting();
+    // Khởi động khi tải trang
+    window.addEventListener('load', async () => {
+        // Ẩn ban đầu các phần tử cần thiết
+        modalOk.style.display = 'none';
+        modalInstruction.style.display = 'none';
+        initialModal.style.display = 'none';
+        
+        // Hiển thị mũi tên và nút menu ngay lập tức
+        instructionArrow.style.opacity = '1';
+        redMenuButton.style.opacity = '1';
+
+        // Đợi 0 giây rồi mới bắt đầu gõ chữ và hiển thị modal
+        setTimeout(async () => {
+            // Xóa dòng ẩn mũi tên và nút menu tại đây
+            initialModal.style.display = 'flex';
+            const greetingText = updateGreeting();
+            await typeEffect(modalGreeting, greetingText, 70); 
+            modalOk.style.display = 'inline-block';
+        }, 0);
     });
 
-  </script>
+    // Gắn sự kiện click cho nút "Bắt đầu"
+    modalOk.addEventListener('click', startSequence);
+</script>
 </body>
 </html>
